@@ -12,6 +12,9 @@
   <% @values.each do |value| -%>
   <Value>
     Type "<%= value['mbean_type'] %>"
+    <% if value['plugin_name'] -%>
+    InstancePrefix "<%= value['plugin_name'] %>"
+    <% end -%>
     <% if value['instance_prefix'] -%>
     InstancePrefix "<%= value['instance_prefix'] %>"
     <% end -%>

@@ -2,6 +2,7 @@
 define collectd::plugin::genericjmx::mbean (
   $object_name,
   $values,
+  $plugin_name     = undef,
   $instance_prefix = undef,
   $instance_from   = undef,
 ) {
