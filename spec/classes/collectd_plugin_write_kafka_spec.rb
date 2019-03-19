@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe 'collectd::plugin::write_kafka', type: :class do
-  on_supported_os(test_on).each do |os, facts|
+  on_supported_os(baseline_os_hash).each do |os, facts|
     context "on #{os} " do
       let :facts do
         facts
@@ -32,16 +32,6 @@ describe 'collectd::plugin::write_kafka', type: :class do
             ensure: 'absent',
             path: "#{options[:plugin_conf_dir]}/10-write_kafka.conf"
           )
-        end
-      end
-
-      context ':topics is a hash' do
-        let :params do
-          { topics: %w[test] }
-        end
-
-        it 'Will raise an error about :topics being an Array' do
-          is_expected.to compile.and_raise_error(%r{Array})
         end
       end
     end

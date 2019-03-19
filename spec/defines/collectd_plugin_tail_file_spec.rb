@@ -1,16 +1,17 @@
 require 'spec_helper'
 
 describe 'collectd::plugin::tail::file', type: :define do
-  on_supported_os.each do |os, facts|
+  on_supported_os(baseline_os_hash).each do |os, facts|
     context "on #{os} " do
       let :facts do
         facts
       end
 
-      options = os_specific_options(facts)
       let :pre_condition do
-        'include ::collectd'
+        'include collectd'
       end
+
+      options = os_specific_options(facts)
 
       context 'Example from README' do
         let(:title) { 'exim-log' }

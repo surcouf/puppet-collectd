@@ -1,14 +1,12 @@
 # https://collectd.org/wiki/index.php/Graphite
 class collectd::plugin::write_graphite (
-  $carbons           = {},
+  Hash $carbons           = {},
   $carbon_defaults   = {},
   $ensure            = 'present',
   $globals           = false,
 ) {
 
   include ::collectd
-
-  validate_hash($carbons)
 
   collectd::plugin { 'write_graphite':
     ensure  => $ensure,
@@ -21,10 +19,10 @@ class collectd::plugin::write_graphite (
   case $ensure {
     'present': {
       concat { $graphite_conf:
-        mode           => '0640',
-        owner          => 'root',
-        group          => $collectd::root_group,
-        notify         => Service['collectd'],
+        mode           => $collectd::config_mode,
+        owner          => $collectd::config_owner,
+        group          => $collectd::config_group,
+        notify         => Service[$collectd::service_name],
         ensure_newline => true,
       }
 

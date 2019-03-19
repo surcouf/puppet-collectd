@@ -1,14 +1,14 @@
 require 'spec_helper'
 
 describe 'collectd::plugin::load', type: :class do
-  on_supported_os(test_on).each do |os, facts|
+  on_supported_os(baseline_os_hash).each do |os, facts|
     context "on #{os} " do
       let :facts do
         facts
       end
 
       let :pre_condition do
-        'include ::collectd'
+        'include collectd'
       end
 
       context 'report_relative in load.conf' do

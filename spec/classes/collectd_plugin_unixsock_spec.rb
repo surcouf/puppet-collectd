@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe 'collectd::plugin::unixsock', type: :class do
-  on_supported_os(test_on).each do |os, facts|
+  on_supported_os(baseline_os_hash).each do |os, facts|
     context "on #{os} " do
       let :facts do
         facts
@@ -28,16 +28,6 @@ describe 'collectd::plugin::unixsock', type: :class do
             ensure: 'absent',
             path: "#{options[:plugin_conf_dir]}/10-unixsock.conf"
           )
-        end
-      end
-
-      context ':socketfile is not an absolute path' do
-        let :params do
-          { socketfile: 'var/run/socket' }
-        end
-
-        it 'Will raise an error about :socketfile' do
-          is_expected.to compile.and_raise_error(%r{absolute path})
         end
       end
     end

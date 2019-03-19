@@ -1,16 +1,16 @@
 require 'spec_helper'
 
 describe 'collectd::plugin::snmp', type: :class do
-  on_supported_os(test_on).each do |os, facts|
+  on_supported_os(baseline_os_hash).each do |os, facts|
     context "on #{os} " do
       let :facts do
         facts
       end
+      let :pre_condition do
+        'include collectd'
+      end
 
       options = os_specific_options(facts)
-      let :pre_condition do
-        'include ::collectd'
-      end
 
       context ':ensure => present and dataset for AMAVIS-MIB::inMsgs.0' do
         let :params do

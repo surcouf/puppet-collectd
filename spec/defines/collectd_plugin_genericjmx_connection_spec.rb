@@ -1,23 +1,20 @@
 require 'spec_helper'
 
 describe 'collectd::plugin::genericjmx::connection', type: :define do
-  on_supported_os.each do |os, facts|
+  on_supported_os(baseline_os_hash).each do |os, facts|
     context "on #{os} " do
+      options = os_specific_options(facts)
       let :facts do
         facts
       end
-
-      options = os_specific_options(facts)
+      let(:title) { 'foo.example.com' }
+      let(:concat_fragment_name) { 'collectd_plugin_genericjmx_conf_foo.example.com' }
       let(:config_filename) { "#{options[:plugin_conf_dir]}/15-genericjmx.conf" }
-
       let(:default_params) do
         {
           service_url: 'foo:bar:baz'
         }
       end
-
-      let(:title) { 'foo.example.com' }
-      let(:concat_fragment_name) { 'collectd_plugin_genericjmx_conf_foo.example.com' }
 
       context 'required params' do
         let(:params) do
@@ -54,7 +51,7 @@ describe 'collectd::plugin::genericjmx::connection', type: :define do
         it { is_expected.to contain_concat__fragment(concat_fragment_name).with_content(%r{Host "bar\.example\.com"}) }
       end
 
-      context 'collect array' do
+      context 'with a collect array of multiple values' do
         let(:params) do
           default_params.merge(collect: %w[foo bar baz])
         end
@@ -62,9 +59,9 @@ describe 'collectd::plugin::genericjmx::connection', type: :define do
         it { is_expected.to contain_concat__fragment(concat_fragment_name).with_content(%r{Collect "foo".*Collect "bar".*Collect "baz"}m) }
       end
 
-      context 'collect string' do
+      context 'with a collect array of one value' do
         let(:params) do
-          default_params.merge(collect: 'bat')
+          default_params.merge(collect: %w[bat])
         end
 
         it { is_expected.to contain_concat__fragment(concat_fragment_name).with_content(%r{Collect "bat"}) }

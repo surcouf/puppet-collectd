@@ -2,7 +2,7 @@
 define collectd::plugin::curl_json (
   $url,
   $instance,
-  $keys,
+  Hash $keys,
   $ensure         = 'present',
   $host           = undef,
   $interval       = undef,
@@ -21,20 +21,18 @@ define collectd::plugin::curl_json (
 
   include ::collectd
 
-  validate_hash($keys)
-
   $_manage_package = pick($manage_package, $::collectd::manage_package)
 
   if $_manage_package {
-    if $::osfamily == 'Debian' {
-      $libyajl_package = $::lsbdistcodename ? {
+    if $facts['os']['family'] == 'Debian' {
+      $libyajl_package = $facts['os']['distro']['codename'] ? {
         'precise' => 'libyajl1',
         default   => 'libyajl2'
       }
       ensure_packages($libyajl_package)
     }
 
-    if $::osfamily == 'RedHat' {
+    if $facts['os']['family'] == 'RedHat' {
       ensure_packages('collectd-curl_json')
     }
   }
@@ -51,10 +49,10 @@ define collectd::plugin::curl_json (
   file {
     "${name}.load":
       path    => "${conf_dir}/${order}-${name}.conf",
-      owner   => 'root',
-      group   => $collectd::root_group,
-      mode    => '0640',
+      owner   => $collectd::config_owner,
+      group   => $collectd::config_group,
+      mode    => $collectd::config_mode,
       content => template('collectd/curl_json.conf.erb'),
-      notify  => Service['collectd'],
+      notify  => Service[$collectd::service_name],
   }
 }

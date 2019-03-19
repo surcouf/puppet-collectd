@@ -1,24 +1,21 @@
 require 'spec_helper'
 
 describe 'collectd::plugin::genericjmx::mbean', type: :define do
-  on_supported_os.each do |os, facts|
+  on_supported_os(baseline_os_hash).each do |os, facts|
     context "on #{os} " do
+      options = os_specific_options(facts)
       let :facts do
         facts
       end
-      options = os_specific_options(facts)
-
+      let(:title) { 'foo' }
+      let(:concat_fragment_name) { 'collectd_plugin_genericjmx_conf_foo' }
       let(:config_filename) { "#{options[:plugin_conf_dir]}/15-genericjmx.conf" }
-
       let(:default_params) do
         {
           object_name: 'bar',
           values: []
         }
       end
-
-      let(:title) { 'foo' }
-      let(:concat_fragment_name) { 'collectd_plugin_genericjmx_conf_foo' }
 
       # empty values array is technically not valid, but we'll test those cases later
       context 'defaults' do
@@ -44,7 +41,7 @@ describe 'collectd::plugin::genericjmx::mbean', type: :define do
         it { is_expected.to contain_concat__fragment(concat_fragment_name).with_content(%r{InstancePrefix "baz"}) }
       end
 
-      context 'instance_from array' do
+      context 'with an instance_from array of multiple values' do
         let(:params) do
           default_params.merge(instance_from: %w[foo bar baz])
         end
@@ -52,9 +49,9 @@ describe 'collectd::plugin::genericjmx::mbean', type: :define do
         it { is_expected.to contain_concat__fragment(concat_fragment_name).with_content(%r{InstanceFrom "foo"\s+InstanceFrom "bar"\s+InstanceFrom "baz"}) }
       end
 
-      context 'instance_from string' do
+      context 'with an instance_from array of one value' do
         let(:params) do
-          default_params.merge(instance_from: 'bat')
+          default_params.merge(instance_from: %w[bat])
         end
 
         it { is_expected.to contain_concat__fragment(concat_fragment_name).with_content(%r{InstanceFrom "bat"}) }
@@ -98,7 +95,7 @@ describe 'collectd::plugin::genericjmx::mbean', type: :define do
           it { is_expected.to contain_concat__fragment(concat_fragment_name).without_content(%r{InstanceFrom}) }
         end
 
-        context 'value section instance_from array' do
+        context 'value section instance_from array, multiple values' do
           let(:params) do
             default_params.merge(values: [default_values_args.merge('instance_from' => %w[alice bob carol])])
           end
@@ -109,9 +106,9 @@ describe 'collectd::plugin::genericjmx::mbean', type: :define do
           it { is_expected.to contain_concat__fragment(concat_fragment_name).without_content(%r{InstancePrefix}) }
         end
 
-        context 'value section instance_from string' do
+        context 'value section instance_from array, single value' do
           let(:params) do
-            default_params.merge(values: [default_values_args.merge('instance_from' => 'dave')])
+            default_params.merge(values: [default_values_args.merge('instance_from' => %w[dave])])
           end
 
           it { is_expected.to contain_concat__fragment(concat_fragment_name).with_content(%r{InstanceFrom "dave"}) }

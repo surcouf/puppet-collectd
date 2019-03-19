@@ -9,12 +9,12 @@ class collectd::repo::debian {
       repos    => "collectd-${$::collectd::ci_package_repo}",
       key      => {
         'id'     => 'F806817DC3F5EA417F9FA2963994D24FB8543576',
-        'server' => 'pgp.mit.edu',
+        'server' => $::collectd::package_keyserver,
       },
     }
   } else {
-    if $::operatingsystem == 'Debian' {
-      warning('Youre trying to use the Ubuntu PPA on a Debian Server, which may cause errors')
+    if $facts['os']['name'] == 'Debian' {
+      warning('You\'re trying to use the Ubuntu PPA on a Debian Server, which may cause errors')
       warning('We recommend you to use the $ci_package_repo parameter if you want to use an upstream repo on Debian')
     } else {
       apt::source { 'ppa_collectd':
@@ -22,7 +22,7 @@ class collectd::repo::debian {
         repos    => 'main',
         key      => {
           'id'     => '7543C08D555DC473B9270ACDAF7ECBB3476ACEB3',
-          'server' => 'keyserver.ubuntu.com',
+          'server' => $::collectd::package_keyserver,
         },
       }
     }

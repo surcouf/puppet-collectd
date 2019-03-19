@@ -1,15 +1,15 @@
 require 'spec_helper'
 
 describe 'collectd::plugin::filter::rule', type: :define do
-  on_supported_os.each do |os, facts|
+  on_supported_os(baseline_os_hash).each do |os, facts|
     context "on #{os} " do
       let :facts do
         facts
       end
-
-      options = os_specific_options(facts)
       let(:title) { 'MyRule' }
       let(:params) { { chain: 'MyChain' } }
+
+      options = os_specific_options(facts)
 
       context 'Add rule' do
         it 'create header and footer of rule' do

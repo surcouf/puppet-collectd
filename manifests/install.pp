@@ -1,19 +1,13 @@
-class collectd::install (
-  $package_ensure          = $collectd::package_ensure,
-  $package_name            = $collectd::package_name,
-  $package_provider        = $collectd::package_provider,
-  $package_install_options = $collectd::package_install_options,
-  $manage_package          = $collectd::manage_package,
-) {
-  if $package_install_options != undef {
-    validate_array($package_install_options)
-  }
+#
+class collectd::install {
 
-  if $manage_package {
-    package { $package_name:
-      ensure          => $package_ensure,
-      provider        => $package_provider,
-      install_options => $package_install_options,
+  assert_private()
+
+  if $collectd::manage_package {
+    package { $collectd::package_name:
+      ensure          => $collectd::package_ensure,
+      provider        => $collectd::package_provider,
+      install_options => $collectd::package_install_options,
     }
   }
 }

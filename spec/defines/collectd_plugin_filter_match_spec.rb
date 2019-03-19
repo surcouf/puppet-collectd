@@ -1,13 +1,12 @@
 require 'spec_helper'
 
 describe 'collectd::plugin::filter::match', type: :define do
-  on_supported_os.each do |os, facts|
+  on_supported_os(baseline_os_hash).each do |os, facts|
     context "on #{os} " do
+      options = os_specific_options(facts)
       let :facts do
         facts
       end
-
-      options = os_specific_options(facts)
       let(:title) { 'MyMatch' }
       let(:default_params) { { chain: 'MyChain', rule: 'MyRule' } }
       let(:concat_fragment_target) { "#{options[:plugin_conf_dir]}/filter-chain-MyChain.conf" }

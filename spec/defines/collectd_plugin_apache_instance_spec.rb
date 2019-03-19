@@ -1,22 +1,20 @@
 require 'spec_helper'
 
 describe 'collectd::plugin::apache::instance', type: :define do
-  on_supported_os.each do |os, facts|
+  on_supported_os(baseline_os_hash).each do |os, facts|
     context "on #{os} " do
       let :facts do
         facts
       end
-
-      options = os_specific_options(facts)
-
       let(:title) { 'foo.example.com' }
       let(:required_params) do
         {
           url: 'http://localhost/mod_status?auto'
         }
       end
-
       let(:filename) { 'apache-instance-foo.example.com.conf' }
+
+      options = os_specific_options(facts)
 
       context 'default params' do
         let(:params) { required_params }

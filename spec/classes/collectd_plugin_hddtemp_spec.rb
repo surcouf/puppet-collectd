@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe 'collectd::plugin::hddtemp', type: :class do
-  on_supported_os(test_on).each do |os, facts|
+  on_supported_os(baseline_os_hash).each do |os, facts|
     context "on #{os} " do
       let :facts do
         facts
@@ -38,16 +38,6 @@ describe 'collectd::plugin::hddtemp', type: :class do
             ensure: 'absent',
             path: "#{options[:plugin_conf_dir]}/10-hddtemp.conf"
           )
-        end
-      end
-
-      context ':port is not an integer' do
-        let :params do
-          { port: 'port' }
-        end
-
-        it 'Will raise an error about :port not being an integer' do
-          is_expected.to compile.and_raise_error(%r{Expected first argument to be an Integer or Array, got String})
         end
       end
     end

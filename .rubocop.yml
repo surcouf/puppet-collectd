@@ -12,6 +12,7 @@ AllCops:
     - Gemfile
     - Rakefile
     - Guardfile
+    - Vagrantfile
 Lint/ConditionPosition:
   Enabled: True
 
@@ -44,6 +45,9 @@ Style/HashSyntax:
 
 Style/RedundantReturn:
   Enabled: True
+
+Layout/EndOfLine:
+  Enabled: False
 
 Lint/AmbiguousOperator:
   Enabled: True
@@ -466,9 +470,6 @@ Metrics/ParameterLists:
 Lint/RequireParentheses:
   Enabled: True
 
-Style/SpaceBeforeFirstArg:
-  Enabled: True
-
 Style/ModuleFunction:
   Enabled: True
 
@@ -526,13 +527,19 @@ RSpec/RepeatedDescription:
 RSpec/NestedGroups:
   Enabled: False
 
-RSpec/ScatteredLet:
-  Enabled: False
-
 # this is broken on ruby1.9
 Layout/IndentHeredoc:
   Enabled: False
 
 # disable Yaml safe_load. This is needed to support ruby2.0.0 development envs
 Security/YAMLLoad:
+  Enabled: false
+
+# This affects hiera interpolation, as well as some configs that we push.
+Style/FormatStringToken:
+  Enabled: false
+
+# This is useful, but sometimes a little too picky about where unit tests files
+# are located.
+RSpec/FilePath:
   Enabled: false

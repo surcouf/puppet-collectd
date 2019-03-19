@@ -1,17 +1,17 @@
 require 'spec_helper'
 
 describe 'collectd::plugin::curl', type: :class do
-  on_supported_os(test_on).each do |os, facts|
+  on_supported_os(baseline_os_hash).each do |os, facts|
     context "on #{os} " do
       let :facts do
         facts
       end
 
-      options = os_specific_options(facts)
-
       let :pre_condition do
-        'include ::collectd'
+        'include collectd'
       end
+
+      options = os_specific_options(facts)
 
       context ':ensure => present, default params' do
         it "Will create #{options[:plugin_conf_dir]}/10-curl.conf" do
@@ -54,7 +54,7 @@ describe 'collectd::plugin::curl', type: :class do
         end
       end
 
-      context ':ensure => present, verifypeer => false, verifyhost => \'false\', measureresponsetime => true, matches empty' do
+      context ':ensure => present, verifypeer => false, verifyhost => false, measureresponsetime => true, matches empty' do
         let :params do
           {
             ensure: 'present',
@@ -62,7 +62,7 @@ describe 'collectd::plugin::curl', type: :class do
               'selfsigned_ssl' => {
                 'url'                 => 'https://some.selfsigned.ssl.site/',
                 'verifypeer'          => false,
-                'verifyhost'          => 'false',
+                'verifyhost'          => false,
                 'measureresponsetime' => true
               }
             }

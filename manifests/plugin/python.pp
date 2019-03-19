@@ -1,28 +1,22 @@
 # See http://collectd.org/documentation/manpages/collectd.conf.5.shtml#plugin_python
 class collectd::plugin::python (
   # Python 2 defaults to 'ascii' and Python 3 to 'utf-8'
-  $encoding       = undef,
-  $ensure         = 'present',
+  $encoding            = undef,
+  $ensure              = 'present',
   # Unlike most other plugins, this one should set "Globals true". This will cause collectd
   # to export the name of all objects in the Python interpreter for all plugins to see.
-  $globals        = true,
-  $interactive    = false,
-  $interval       = undef,
-  $logtraces      = false,
-  $manage_package = undef,
-  $modulepaths    = [],
-  $modules        = {},
-  $order          = '10',
-  $conf_name      = 'python-config.conf',
+  Boolean $globals     = true,
+  Boolean $interactive = false,
+  $interval            = undef,
+  Boolean $logtraces   = false,
+  $manage_package      = undef,
+  Array $modulepaths   = [],
+  Hash $modules        = {},
+  $order               = '10',
+  $conf_name           = 'python-config.conf',
 ) {
 
   include ::collectd
-
-  validate_hash($modules)
-  validate_bool($interactive)
-  validate_bool($logtraces)
-  validate_bool($globals)
-  validate_array($modulepaths)
 
   $module_dirs = empty($modulepaths) ? {
     true  => [$collectd::python_dir],
@@ -38,7 +32,7 @@ class collectd::plugin::python (
     $ensure_real = 'absent'
   }
 
-  if $::operatingsystem == 'Fedora' {
+  if $facts['os']['name'] == 'Fedora' or $facts['os']['name'] == 'Amazon' {
     if $_manage_package {
       package { 'collectd-python':
         ensure => $ensure_real,
@@ -61,11 +55,11 @@ class collectd::plugin::python (
   ensure_resource('file', $module_dirs,
     {
       'ensure'  => $ensure_modulepath,
-      'mode'    => '0755',
-      'owner'   => 'root',
+      'mode'    => $collectd::plugin_conf_dir_mode,
+      'owner'   => $collectd::config_owner,
       'purge'   => $::collectd::purge_config,
       'force'   => true,
-      'group'   => $collectd::root_group,
+      'group'   => $collectd::config_group,
       'require' => Package[$collectd::package_name]
     }
   )
@@ -75,17 +69,17 @@ class collectd::plugin::python (
 
   concat { $python_conf:
     ensure         => $ensure,
-    mode           => '0640',
-    owner          => 'root',
-    group          => $collectd::root_group,
-    notify         => Service['collectd'],
+    mode           => $collectd::config_mode,
+    owner          => $collectd::config_owner,
+    group          => $collectd::config_group,
+    notify         => Service[$collectd::service_name],
     ensure_newline => true,
     require        => File['collectd.d'],
   }
 
   concat::fragment { 'collectd_plugin_python_conf_header':
     order   => '00',
-    content => template('collectd/plugin/python/header.conf.erb'),
+    content => epp('collectd/plugin/python/header.conf.epp'),
     target  => $python_conf,
   }
 

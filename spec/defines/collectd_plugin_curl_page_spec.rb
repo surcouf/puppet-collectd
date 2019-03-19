@@ -1,16 +1,16 @@
 require 'spec_helper'
 
 describe 'collectd::plugin::curl::page', type: :define do
-  on_supported_os.each do |os, facts|
+  on_supported_os(baseline_os_hash).each do |os, facts|
     context "on #{os} " do
       let :facts do
         facts
       end
+      let :pre_condition do
+        'include collectd'
+      end
 
       options = os_specific_options(facts)
-      let :pre_condition do
-        'include ::collectd'
-      end
 
       context 'simple case' do
         let(:title) { 'test' }

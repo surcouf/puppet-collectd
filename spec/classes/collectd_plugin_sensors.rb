@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe 'collectd::plugin::sensors', type: :class do
   let :pre_condition do
-    'include ::collectd'
+    'include collectd'
   end
   ######################################################################
   # Default param validation, compilation succeeds
@@ -103,6 +103,28 @@ describe 'collectd::plugin::sensors', type: :class do
     it 'Will not create /etc/collectd.d/10-sensors.conf' do
       is_expected.to contain_file('sensors.load').with(ensure: 'absent',
                                                        path: '/etc/collectd.d/10-sensors.conf')
+    end
+  end
+
+  context ':install_options install package with install options' do
+    let :facts do
+      {
+        osfamily: 'RedHat',
+        collectd_version: '5.4',
+        operatingsystemmajrelease: '7',
+        python_dir: '/usr/local/lib/python2.7/dist-packages'
+      }
+    end
+    let :params do
+      { ensure: 'present',
+        install_options: ['--enablerepo=mycollectd-repo'] }
+    end
+
+    it 'Will install the package with install options' do
+      is_expected.to contain_package('collectd-sensors').with(
+        ensure: 'present',
+        install_options: ['--enablerepo=mycollectd-repo']
+      )
     end
   end
 end
